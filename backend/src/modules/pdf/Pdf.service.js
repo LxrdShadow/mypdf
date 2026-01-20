@@ -5,24 +5,48 @@ class PdfService {
         this.client = client;
     }
 
-    async merge(files) {
+    getFormData(files, fieldName) {
         const formData = new FormData();
-        files.forEach((file) => {
+        files.forEach((file) =>
             formData.append(
-                "fileInput",
+                fieldName,
                 new Blob([file.buffer], { type: file.mimetype }),
                 file.originalname,
-            );
-        });
+            ),
+        );
+        return formData;
+    }
+
+    async merge(files) {
+        const formData = this.getFormData(files, "fileInput");
 
         try {
             const response = await this.client.post(
                 "general/merge-pdfs",
                 formData,
                 {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
+                    responseType: "stream",
+                },
+            );
+
+            return response.data;
+        } catch (error) {
+            throw new AppError(
+                error.response?.data?.message || error.response?.statusText,
+                error.response?.status,
+            );
+        }
+    }
+
+    async compress(file, expectedOutputSize) {
+        const formData = this.getFormData([file], "fileInput");
+        formData.append("expectedOutputSize", expectedOutputSize);
+
+        try {
+            const response = await this.client.post(
+                "misc/compress-pdf",
+                formData,
+                {
                     responseType: "stream",
                 },
             );
