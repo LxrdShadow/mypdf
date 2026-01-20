@@ -17,11 +17,18 @@ export async function mergePdfs(req, res, next) {
 
 export async function compressPdf(req, res, next) {
     try {
+        const expectedOutputSize = req.body.expectedOutputSize || "25KB";
         const pdfService = new PdfService(axios);
-        const pdfStream = await pdfService.compress(req.file);
+        const pdfStream = await pdfService.compress(
+            req.file,
+            expectedOutputSize,
+        );
 
         res.setHeader("Content-Type", "application/pdf");
-        res.setHeader("Content-Disposition", "attachment; filename=compressed.pdf");
+        res.setHeader(
+            "Content-Disposition",
+            "attachment; filename=compressed.pdf",
+        );
 
         pdfStream.pipe(res);
     } catch (error) {
