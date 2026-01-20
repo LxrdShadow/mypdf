@@ -1,4 +1,5 @@
 import AppError from "../../shared/errors/AppError.js";
+import { readStream } from "../../shared/axios/index.js";
 
 class PdfService {
     constructor(client) {
@@ -31,8 +32,25 @@ class PdfService {
 
             return response.data;
         } catch (error) {
+            if (error.response?.data?.readable) {
+                const raw = await readStream(error.response.data);
+
+                let message = raw;
+                try {
+                    const parsed = JSON.parse(raw);
+                    message = parsed.message || parsed.error || raw;
+                } catch {
+                    throw new AppError(
+                        error.response?.data?.messag,
+                        error.response?.status,
+                    );
+                }
+
+                throw new AppError(message, error.response.status);
+            }
+
             throw new AppError(
-                error.response?.data?.message || error.response?.statusText,
+                error.response?.data?.message,
                 error.response?.status,
             );
         }
@@ -53,8 +71,25 @@ class PdfService {
 
             return response.data;
         } catch (error) {
+            if (error.response?.data?.readable) {
+                const raw = await readStream(error.response.data);
+
+                let message = raw;
+                try {
+                    const parsed = JSON.parse(raw);
+                    message = parsed.message || parsed.error || raw;
+                } catch {
+                    throw new AppError(
+                        error.response?.data?.messag,
+                        error.response?.status,
+                    );
+                }
+
+                throw new AppError(message, error.response.status);
+            }
+
             throw new AppError(
-                error.response?.data?.message || error.response?.statusText,
+                error.response?.data?.message,
                 error.response?.status,
             );
         }
@@ -75,8 +110,25 @@ class PdfService {
 
             return response.data;
         } catch (error) {
+            if (error.response?.data?.readable) {
+                const raw = await readStream(error.response.data);
+
+                let message = raw;
+                try {
+                    const parsed = JSON.parse(raw);
+                    message = parsed.message || parsed.error || raw;
+                } catch {
+                    throw new AppError(
+                        error.response?.data?.messag,
+                        error.response?.status,
+                    );
+                }
+
+                throw new AppError(message, error.response.status);
+            }
+
             throw new AppError(
-                error.response?.data?.message || error.response?.statusText,
+                error.response?.data?.message,
                 error.response?.status,
             );
         }
