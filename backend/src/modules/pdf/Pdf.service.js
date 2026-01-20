@@ -5,15 +5,20 @@ class PdfService {
         this.client = client;
     }
 
-    async merge(files) {
+    getFormData(files, fieldName) {
         const formData = new FormData();
-        files.forEach((file) => {
+        files.forEach((file) =>
             formData.append(
-                "fileInput",
+                fieldName,
                 new Blob([file.buffer], { type: file.mimetype }),
                 file.originalname,
-            );
-        });
+            ),
+        );
+        return formData;
+    }
+
+    async merge(files) {
+        const formData = this.getFormData(files, "fileInput");
 
         try {
             const response = await this.client.post(
