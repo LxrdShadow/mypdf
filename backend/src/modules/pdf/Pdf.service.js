@@ -62,6 +62,25 @@ class PdfService {
         }
     }
 
+    async convertPdfToHtml(url) {
+        const formData = new FormData();
+        formData.append("urlInput", url);
+
+        try {
+            const response = await this.client.post(
+                "convert/pdf/html",
+                formData,
+                {
+                    responseType: "stream",
+                },
+            );
+
+            return response.data;
+        } catch (error) {
+            await this.handleError(error);
+        }
+    }
+
     getFormData(files, fieldName) {
         const formData = new FormData();
         files.forEach((file) =>
