@@ -53,3 +53,20 @@ export async function rotatePdf(req, res, next) {
         next(error);
     }
 }
+
+export async function convertPdfToHtml(req, res, next) {
+    try {
+        const pdfService = new PdfService(axios);
+        const pdfStream = await pdfService.convertPdfToHtml(req.file);
+
+        res.setHeader("Content-Type", "application/zip");
+        res.setHeader(
+            "Content-Disposition",
+            "attachment; filename=converted.html",
+        );
+
+        pdfStream.pipe(res);
+    } catch (error) {
+        next(error);
+    }
+}
