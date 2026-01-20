@@ -78,6 +78,22 @@ class PdfService {
         }
     }
 
+    async convertPdfToMd(file) {
+        const formData = this.getFormData([file], "fileInput");
+
+        try {
+            const response = await this.client.post(
+                "convert/pdf/markdown",
+                formData,
+                { responseType: "stream" },
+            );
+
+            return response.data;
+        } catch (error) {
+            await this.handleError(error);
+        }
+    }
+
     getFormData(files, fieldName) {
         const formData = new FormData();
         files.forEach((file) =>
