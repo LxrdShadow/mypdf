@@ -40,6 +40,30 @@ class PdfService {
             );
         }
     }
+
+    async compress(file, expectedOutputSize) {
+        const formData = this.getFormData([file], "fileInput");
+
+        try {
+            const response = await this.client.post(
+                "general/merge-pdfs",
+                { ...formData, expectedOutputSize },
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                    responseType: "stream",
+                },
+            );
+
+            return response.data;
+        } catch (error) {
+            throw new AppError(
+                error.response?.data?.message || error.response?.statusText,
+                error.response?.status,
+            );
+        }
+    }
 }
 
 export default PdfService;
