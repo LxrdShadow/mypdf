@@ -1,31 +1,40 @@
 import AppError from "../../shared/errors/AppError.js";
-import axios from "../../shared/axios/index.js";
 
-const merge = async (files) => {
-    const formData = new FormData();
-    files.forEach((file) => {
-        formData.append(
-            "fileInput",
-            new Blob([file.buffer], { type: file.mimetype }),
-            file.originalname,
-        );
-    });
+class PdfService {
+    constructor(client) {
+        this.client = client;
+    }
 
-    try {
-        const response = await axios.post("general/merge-pdfs", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-            responseType: "stream",
+    async merge(files) {
+        const formData = new FormData();
+        files.forEach((file) => {
+            formData.append(
+                "fileInput",
+                new Blob([file.buffer], { type: file.mimetype }),
+                file.originalname,
+            );
         });
 
-        return response.data;
-    } catch (error) {
-        throw new AppError(
-            error.response?.data?.message || error.response?.statusText,
-            error.response?.status,
-        );
-    }
-};
+        try {
+            const response = await this.client.post(
+                "general/merge-pdfs",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                    responseType: "stream",
+                },
+            );
 
-export const PdfService = { merge };
+            return response.data;
+        } catch (error) {
+            throw new AppError(
+                error.response?.data?.message || error.response?.statusText,
+                error.response?.status,
+            );
+        }
+    }
+}
+
+export default PdfService;
