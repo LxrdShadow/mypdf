@@ -25,9 +25,6 @@ class PdfService {
                 "general/merge-pdfs",
                 formData,
                 {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
                     responseType: "stream",
                 },
             );
@@ -43,15 +40,13 @@ class PdfService {
 
     async compress(file, expectedOutputSize) {
         const formData = this.getFormData([file], "fileInput");
+        formData.append("expectedOutputSize", expectedOutputSize);
 
         try {
             const response = await this.client.post(
-                "general/merge-pdfs",
-                { ...formData, expectedOutputSize },
+                "misc/compress-pdf",
+                formData,
                 {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
                     responseType: "stream",
                 },
             );
