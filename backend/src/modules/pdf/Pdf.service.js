@@ -1,5 +1,5 @@
-const AppError = require("../../shared/errors/AppError");
-const axios = require("../../shared/axios");
+import AppError from "../../shared/errors/AppError.js";
+import axios from "../../shared/axios/index.js";
 
 const merge = async (files) => {
     const formData = new FormData();
@@ -21,6 +21,7 @@ const merge = async (files) => {
 
         return response.data;
     } catch (error) {
+        console.log(error)
         throw new AppError(
             error.response?.data?.message || error.response?.statusText,
             error.response?.status,
@@ -28,4 +29,4 @@ const merge = async (files) => {
     }
 };
 
-module.exports.PdfService = { merge };
+export const PdfService = { merge };

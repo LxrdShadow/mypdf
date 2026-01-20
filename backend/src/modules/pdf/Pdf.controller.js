@@ -1,6 +1,6 @@
-const { PdfService } = require("./Pdf.service");
+import { PdfService } from "./Pdf.service.js";
 
-async function mergePdfs(req, res, next) {
+export async function mergePdfs(req, res, next) {
     try {
         const pdfStream = await PdfService.merge(req.files);
 
@@ -12,5 +12,3 @@ async function mergePdfs(req, res, next) {
         next(error);
     }
 }
-
-module.exports = { mergePdfs };

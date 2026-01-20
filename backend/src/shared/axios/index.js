@@ -1,5 +1,5 @@
-const axios = require("axios");
-const { STIRLING_API_URL, STIRLING_API_KEY } = require("../../config/env");
+import axios from "axios";
+import { STIRLING_API_URL, STIRLING_API_KEY } from "../../config/env.js";
 
 const api = axios.create({
     baseURL: STIRLING_API_URL,
@@ -10,4 +10,4 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-module.exports = api;
+export default api;
