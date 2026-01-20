@@ -21,7 +21,6 @@ const merge = async (files) => {
 
         return response.data;
     } catch (error) {
-        console.log(error)
         throw new AppError(
             error.response?.data?.message || error.response?.statusText,
             error.response?.status,
