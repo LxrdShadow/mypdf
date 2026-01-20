@@ -6,18 +6,6 @@ class PdfService {
         this.client = client;
     }
 
-    getFormData(files, fieldName) {
-        const formData = new FormData();
-        files.forEach((file) =>
-            formData.append(
-                fieldName,
-                new Blob([file.buffer], { type: file.mimetype }),
-                file.originalname,
-            ),
-        );
-        return formData;
-    }
-
     async merge(files) {
         const formData = this.getFormData(files, "fileInput");
 
@@ -32,27 +20,7 @@ class PdfService {
 
             return response.data;
         } catch (error) {
-            if (error.response?.data?.readable) {
-                const raw = await readStream(error.response.data);
-
-                let message = raw;
-                try {
-                    const parsed = JSON.parse(raw);
-                    message = parsed.message || parsed.error || raw;
-                } catch {
-                    throw new AppError(
-                        error.response?.data?.messag,
-                        error.response?.status,
-                    );
-                }
-
-                throw new AppError(message, error.response.status);
-            }
-
-            throw new AppError(
-                error.response?.data?.message,
-                error.response?.status,
-            );
+            await this.handleError(error);
         }
     }
 
@@ -71,27 +39,7 @@ class PdfService {
 
             return response.data;
         } catch (error) {
-            if (error.response?.data?.readable) {
-                const raw = await readStream(error.response.data);
-
-                let message = raw;
-                try {
-                    const parsed = JSON.parse(raw);
-                    message = parsed.message || parsed.error || raw;
-                } catch {
-                    throw new AppError(
-                        error.response?.data?.messag,
-                        error.response?.status,
-                    );
-                }
-
-                throw new AppError(message, error.response.status);
-            }
-
-            throw new AppError(
-                error.response?.data?.message,
-                error.response?.status,
-            );
+            await this.handleError(error);
         }
     }
 
@@ -110,28 +58,60 @@ class PdfService {
 
             return response.data;
         } catch (error) {
-            if (error.response?.data?.readable) {
-                const raw = await readStream(error.response.data);
+            await this.handleError(error);
+        }
+    }
 
-                let message = raw;
-                try {
-                    const parsed = JSON.parse(raw);
-                    message = parsed.message || parsed.error || raw;
-                } catch {
-                    throw new AppError(
-                        error.response?.data?.messag,
-                        error.response?.status,
-                    );
-                }
+    async convertPdfToHtml(file) {
+        const formData = this.getFormData([file], "fileInput");
 
-                throw new AppError(message, error.response.status);
+        try {
+            const response = await this.client.post(
+                "convert/pdf/html",
+                formData,
+                { responseType: "stream" },
+            );
+
+            return response.data;
+        } catch (error) {
+            await this.handleError(error);
+        }
+    }
+
+    getFormData(files, fieldName) {
+        const formData = new FormData();
+        files.forEach((file) =>
+            formData.append(
+                fieldName,
+                new Blob([file.buffer], { type: file.mimetype }),
+                file.originalname,
+            ),
+        );
+        return formData;
+    }
+
+    async handleError(error) {
+        if (error.response?.data?.readable) {
+            const raw = await readStream(error.response.data);
+
+            let message = raw;
+            try {
+                const parsed = JSON.parse(raw);
+                message = parsed.message || parsed.error || raw;
+            } catch {
+                throw new AppError(
+                    error.response?.data?.messag,
+                    error.response?.status,
+                );
             }
 
-            throw new AppError(
-                error.response?.data?.message,
-                error.response?.status,
-            );
+            throw new AppError(message, error.response.status);
         }
+
+        throw new AppError(
+            error.response?.data?.message,
+            error.response?.status,
+        );
     }
 }
 
