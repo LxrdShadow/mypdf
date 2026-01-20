@@ -62,17 +62,14 @@ class PdfService {
         }
     }
 
-    async convertPdfToHtml(url) {
-        const formData = new FormData();
-        formData.append("urlInput", url);
+    async convertPdfToHtml(file) {
+        const formData = this.getFormData([file], "fileInput");
 
         try {
             const response = await this.client.post(
                 "convert/pdf/html",
                 formData,
-                {
-                    responseType: "stream",
-                },
+                { responseType: "stream" },
             );
 
             return response.data;
