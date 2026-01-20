@@ -10,4 +10,17 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+export function readStream(stream) {
+    return new Promise((resolve, reject) => {
+        let data = "";
+
+        stream.on("data", (chunk) => {
+            data += chunk.toString("utf8");
+        });
+
+        stream.on("end", () => resolve(data));
+        stream.on("error", reject);
+    });
+}
+
 export default api;

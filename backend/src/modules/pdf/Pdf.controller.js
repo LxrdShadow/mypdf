@@ -35,3 +35,21 @@ export async function compressPdf(req, res, next) {
         next(error);
     }
 }
+
+export async function rotatePdf(req, res, next) {
+    try {
+        const angle = req.body.angle || 0;
+        const pdfService = new PdfService(axios);
+        const pdfStream = await pdfService.rotate(req.file, angle);
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+            "Content-Disposition",
+            "attachment; filename=rotated.pdf",
+        );
+
+        pdfStream.pipe(res);
+    } catch (error) {
+        next(error);
+    }
+}
