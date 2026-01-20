@@ -59,6 +59,28 @@ class PdfService {
             );
         }
     }
+
+    async rotate(file, angle) {
+        const formData = this.getFormData([file], "fileInput");
+        formData.append("angle", angle);
+
+        try {
+            const response = await this.client.post(
+                "general/rotate-pdf",
+                formData,
+                {
+                    responseType: "stream",
+                },
+            );
+
+            return response.data;
+        } catch (error) {
+            throw new AppError(
+                error.response?.data?.message || error.response?.statusText,
+                error.response?.status,
+            );
+        }
+    }
 }
 
 export default PdfService;
